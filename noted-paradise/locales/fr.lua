@@ -1,6 +1,6 @@
 local Translations = {
     info = {
-        close_camera = 'Close Camera',
+        close_camera = 'Fermer La Caméra',
     },
 }
 

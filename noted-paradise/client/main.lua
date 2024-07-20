@@ -33,7 +33,7 @@ local function CreateInstuctionScaleform(scaleform)
     PushScaleformMovieFunctionParameterInt(1)
     ScaleformMovieMethodAddParamPlayerNameString(GetControlInstructionalButton(1, 194, true))
     BeginTextCommandScaleformString('STRING')
-    AddTextComponentScaleform("Lang:t('info.close_camera')" .. "InstructionButtonMessage")
+    AddTextComponentScaleform(Lang:t('info.close_camera'))
     EndTextCommandScaleformString()
     PopScaleformMovieFunctionVoid()
 
