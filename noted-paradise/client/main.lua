@@ -53,9 +53,10 @@ end
 
 local function RunLoop()
     CreateThread(function()
-        print("loop enetered\n")
-        while createdCamera ~= 0 do
-            print("loop running")
+        local countdown = Config.TimeAllowedInParadise/Config.CreateThreadWaitTimer
+        --print("Config.TimeAllowedInParadise/Config.CreateThreadWaitTimer = " .. Config.TimeAllowedInParadise/Config.CreateThreadWaitTimer)
+        --print("countdown = " .. countdown)
+        while createdCamera ~= 0 and countdown > 0 do
             local instructions = CreateInstuctionScaleform('instructional_buttons')
             DrawScaleformMovieFullscreen(instructions, 255, 255, 255, 255, 0)
             SetTimecycleModifier('scanline_cam_cheap')
@@ -73,9 +74,6 @@ local function RunLoop()
                     Wait(0)
                 end
                 CloseSecurityCamera()
-                SendNUIMessage({
-                    type = 'disablecam',
-                })
                 DoScreenFadeIn(250)
             end
 
@@ -109,10 +107,20 @@ local function RunLoop()
             --         SetCamRot(createdCamera, getCameraRot.x, 0.0, getCameraRot.z - 0.7, 2)
             --     end
             -- end
-
-            -- CHANGE THIS TO A VARIABLE LATER
-            Wait(5)
+            --print("countdown = " .. countdown)
+            countdown = countdown - 1
+            Wait(Config.CreateThreadWaitTimer)
         end
+
+        if createdCamera ~= 0 then
+            DoScreenFadeOut(250)
+            while not IsScreenFadedOut() do
+                Wait(0)
+            end
+            CloseSecurityCamera()
+            DoScreenFadeIn(250)
+        end
+        
     end)
 end
 
