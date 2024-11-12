@@ -33,7 +33,8 @@ local function CreateInstuctionScaleform(scaleform)
     PushScaleformMovieFunctionParameterInt(1)
     ScaleformMovieMethodAddParamPlayerNameString(GetControlInstructionalButton(1, 194, true))
     BeginTextCommandScaleformString('STRING')
-    AddTextComponentScaleform(Lang:t('info.close_camera'))
+    --AddTextComponentScaleform(Lang:t('info.close_camera'))
+    AddTextComponentScaleform('Snap Back To Reality')
     EndTextCommandScaleformString()
     PopScaleformMovieFunctionVoid()
 
@@ -53,9 +54,12 @@ end
 
 local function RunLoop()
     CreateThread(function()
-        local countdown = Config.TimeAllowedInParadise/Config.CreateThreadWaitTimer
+        local countdown = Config.TimeAllowedInParadise
+        -- Config.CreateThreadWaitTimer 
         --print("Config.TimeAllowedInParadise/Config.CreateThreadWaitTimer = " .. Config.TimeAllowedInParadise/Config.CreateThreadWaitTimer)
         --print("countdown = " .. countdown)
+        local getCameraRot = GetCamRot(createdCamera, 2)
+        SetCamRot(createdCamera, Config.Paradise.r.x, 0.0, getCameraRot.z, 2)
         while createdCamera ~= 0 and countdown > 0 do
             local instructions = CreateInstuctionScaleform('instructional_buttons')
             DrawScaleformMovieFullscreen(instructions, 255, 255, 255, 255, 0)
@@ -77,6 +81,30 @@ local function RunLoop()
                 DoScreenFadeIn(250)
             end
 
+
+            --- DISABLE MOVEMENT STUFF:
+
+
+            DisableControlAction(0, 30, true)   -- Disable move left/right
+            DisableControlAction(0, 31, true)   -- Disable move up/down
+            DisableControlAction(0, 21, true)   -- Disable sprint
+            DisableControlAction(0, 22, true)   -- Disable jump
+            DisableControlAction(0, 23, true)   -- Disable enter vehicle
+            DisableControlAction(0, 75, true)   -- Disable exit vehicle
+            DisableControlAction(0, 24, true)   -- Disable attack
+            DisableControlAction(0, 25, true)   -- Disable aim
+            DisableControlAction(0, 45, true)   -- Disable reload
+            DisableControlAction(0, 140, true)  -- Disable melee attack light
+            DisableControlAction(0, 141, true)  -- Disable melee attack heavy
+            DisableControlAction(0, 142, true)  -- Disable melee attack alternate
+            DisableControlAction(0, 143, true)  -- Disable melee attack knockout
+            DisableControlAction(0, 257, true)  -- Disable attack 2
+            DisableControlAction(0, 263, true)  -- Disable melee attack 1
+            DisableControlAction(0, 264, true)  -- Disable melee attack 2
+
+            ---------------------------------------------------------
+
+
             ---------------------------------------------------------------------------
             -- CAMERA ROTATION CONTROLS
             ---------------------------------------------------------------------------
@@ -95,6 +123,7 @@ local function RunLoop()
             --         if getCameraRot.x >= -50.0 then
             --             SetCamRot(createdCamera, getCameraRot.x - 0.7, 0.0, getCameraRot.z, 2)
             --         end
+            --         print("camera rot.x = " .. getCameraRot.x)
             --     end
 
             --     -- ROTATE LEFT
@@ -131,8 +160,16 @@ local function ChangeSecurityCamera(x, y, z, r)
     end
 
     local cam = CreateCam('DEFAULT_SCRIPTED_CAMERA', 1)
+    -- print("r.x = " .. r.x)
+    -- print("r.y = " .. r.y)
+    -- print("r.z = " .. r.z)
+    
     SetCamCoord(cam, x, y, z)
-    -- SetCamRot(cam, r.x, r.y, r.z, 2)
+    SetCamRot(cam, r.x,r.y,r.z, 2)
+    local temp = GetCamRot(cam, 2)
+    
+    
+    -- print("camera rotation x = " .. temp.x)
     RenderScriptCams(1, 0, 0, 1, 1)
     Wait(250)
     createdCamera = cam
@@ -140,6 +177,11 @@ local function ChangeSecurityCamera(x, y, z, r)
 end
 
 RegisterNetEvent('noted-paradise:client:ActiveCamera', function(id)
+    if createdCamera ~= 0 then
+        CloseSecurityCamera()
+        return
+    end
+        
     if id == 1 then
         DoScreenFadeOut(250)
         while not IsScreenFadedOut() do
@@ -154,7 +196,6 @@ RegisterNetEvent('noted-paradise:client:ActiveCamera', function(id)
         SetFocusArea(x, y, z, x, y, z)
 
         ChangeSecurityCamera(x,y,z,r)
-        
         DoScreenFadeIn(250)
     elseif id == 2 then
         DoScreenFadeOut(250)
@@ -164,5 +205,4 @@ RegisterNetEvent('noted-paradise:client:ActiveCamera', function(id)
         CloseSecurityCamera()
     end
 end)
-
 
